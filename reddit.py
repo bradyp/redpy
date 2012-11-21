@@ -4,69 +4,58 @@ import sys
 try:
     import json
     import requests
-    import bradyglen
     from pprint import pprint as pp2
 except ImportError:
     print 'Error importing a dependancy, terminating program'
     sys.exit(-1)
+
+class Redpy:
+    def __init__(self):
+        headers = {'user-agent': '/u/bradygp\'s Crawler', }
+        self.client = requests.session()
+
+    def login(self, username, password):
+        """
+        Input: reddit username, reddit password
+        Output: session object
+        """
+
+        UP = {'user': username, 'passwd': password, 'api_type': 'json',}
  
-#----------------------------------------------------------------------
-def login(username, password):
-    """logs into reddit, saves cookie"""
+        r = self.client.post('http://www.reddit.com/api/login', data=UP)
+        j = json.loads(r.text)
+  
+        self.client.modhash = j['json']['data']['modhash']
+        self.client.user = username
+        return self.client
  
-    print 'begin log in'
-    #username and password
-    UP = {'user': username, 'passwd': password, 'api_type': 'json',}
-    headers = {'user-agent': '/u/TankorSmash\'s API python bot', }
-    #POST with user/pwd
-    client = requests.session()
+    def subredditInfo(self, limit, sr, sorting='', return_json=True, **kwargs):
+        """
+        INPUT: max number of posts up to 100, subreddit, sorting method(new,top,old,best,etc.), boolean specifying if returning json, additional arguments
+        OUTPUT: json file of all desired reddit posts
+        """
+        """retrieves X (max 100) amount of stories in a subreddit\n
+        'sorting' is whether or not the sorting of the reddit should be customized or not,
+        if it is: Allowed passing params/queries such as t=hour, week, month, year or all"""
  
-    r = client.post('http://www.reddit.com/api/login', data=UP)
+        parameters = {'limit': limit,}
+        parameters.update(kwargs)
  
+        url = r'http://www.reddit.com/r/{sr}/{top}.json'.format(sr=sr, top=sorting)
+        r = self.client.get(url,params=parameters)
+        j = json.loads(r.text)
  
-    client.modhash = j['json']['data']['modhash']
-    print '{USER}\'s modhash is: {mh}'.format(USER=username, mh=client.modhash)
-    client.user = username
-    def name():
+        if return_json:
+            return j
+        else:
+            stories = []
+            for story in j['data']['children']:
+                stories.append(story) 
+            return stories
+
+obj = Redpy() 
+obj.login('bradygp', 'treeoflife')
  
-        return '{}\'s client'.format(username)
- 
-    #pp2(j)
- 
-    return client
- 
-#----------------------------------------------------------------------
-def subredditInfo(client, limit=25, sr='pokemon',
-                  sorting='', return_json=True, **kwargs):
-    """retrieves X (max 100) amount of stories in a subreddit\n
-    'sorting' is whether or not the sorting of the reddit should be customized or not,
-    if it is: Allowed passing params/queries such as t=hour, week, month, year or all"""
- 
-    #query to send
-    parameters = {'limit': limit,}
-    #parameters= defaults.copy()
-    parameters.update(kwargs)
- 
-    url = r'http://www.reddit.com/r/{sr}/{top}.json'.format(sr=sr, top=sorting)
-    r = client.get(url,params=parameters)
-    print 'sent URL is', r.url
-    j = json.loads(r.text)
- 
-    #return raw json
-    if return_json:
-        return j
- 
-    #or list of stories
-    else:
-        stories = []
-        for story in j['data']['children']:
-            #print story['data']['title']
-            stories.append(story)
- 
-        return stories
- 
-client = login('bradygp', 'treeoflife')
- 
-j = subredditInfo(client, limit=5)
+j = obj.subredditInfo(sys.argv[1], 'netsec', 'hot')
  
 pp2(j)
