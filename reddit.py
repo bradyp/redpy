@@ -3,16 +3,30 @@ import sys
 
 try:
     import json
+    import ujson
     import requests
+    import os.path
+    import fileinput
     from pprint import pprint as pp2
 except ImportError:
     print 'Error importing a dependancy, terminating program'
     sys.exit(-1)
 
+def read_tweets():
+    for line in fileinput.input():
+        yield ujson.loads(line)
+
 class Redpy:
     def __init__(self):
         headers = {'user-agent': '/u/bradygp\'s Crawler', }
         self.client = requests.session()
+        self.data = []
+
+        if os.path.isfile('DATA.json'):
+            self.data = list(read_tweets())
+        else:
+            f = open('DATA.json','w')
+            f.close()
 
     def login(self, username, password):
         """
@@ -29,33 +43,26 @@ class Redpy:
         self.client.user = username
         return self.client
  
-    def subredditInfo(self, limit, sr, sorting='', return_json=True, **kwargs):
+    def subredditInfo(self, limit, sr, sorting='', return_json=False, **kwargs):
         """
         INPUT: max number of posts up to 100, subreddit, sorting method(new,top,old,best,etc.), boolean specifying if returning json, additional arguments
         OUTPUT: json file of all desired reddit posts
         """
-        """retrieves X (max 100) amount of stories in a subreddit\n
-        'sorting' is whether or not the sorting of the reddit should be customized or not,
-        if it is: Allowed passing params/queries such as t=hour, week, month, year or all"""
- 
         parameters = {'limit': limit,}
         parameters.update(kwargs)
  
         url = r'http://www.reddit.com/r/{sr}/{top}.json'.format(sr=sr, top=sorting)
         r = self.client.get(url,params=parameters)
         j = json.loads(r.text)
- 
         if return_json:
             return j
         else:
-            stories = []
             for story in j['data']['children']:
-                stories.append(story) 
-            return stories
+                self.data.append(story)
 
 obj = Redpy() 
-obj.login('bradygp', 'treeoflife')
+obj.login(sys.argv[2], sys.argv[3])
  
-j = obj.subredditInfo(sys.argv[1], 'netsec', 'hot')
- 
-pp2(j)
+obj.subredditInfo(10, 'pokemon', 'hot')
+
+#pp2(j)
