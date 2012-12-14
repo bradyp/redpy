@@ -1,7 +1,7 @@
 redpy
 =====
 
-subreddit analyzer using python
+Subreddit analyzer using python!
 
 dependencies
 ============
