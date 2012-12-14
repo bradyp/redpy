@@ -10,8 +10,8 @@ try:
     import os.path
     import fileinput
     from pprint import pprint as pp2
-except ImportError:
-    print 'Error importing a dependancy, terminating program'
+except ImportError as err:
+    sys.stderr.write('Error importing dependency ({}), terminating program'.format(err))
     sys.exit(-1)
 
 #########################################################
