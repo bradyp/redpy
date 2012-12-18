@@ -36,10 +36,12 @@ class Redpy:
     TODO :: Class Description
     """
     def __init__(self):
-        headers = {'user-agent': '/u/bradygp\'s Crawler', }
-        self.client = requests.session()
+        # Prepare class variables
         self.data = []
+        self.client = requests.session()
+        headers = {'user-agent': '/u/bradygp\'s Crawler', } # What is this?
 
+        # Read DATA.json file if present or create on if needed
         if os.path.isfile('DATA.json'):
             self.data = list(read_tweets())
         else:
@@ -87,7 +89,8 @@ class Redpy:
 def main():
     obj = Redpy()
     obj.login(sys.argv[2], sys.argv[3])
-    obj.sub_reddit_info(10, 'pokemon', 'hot')
+    obj.sub_reddit_info(lim=10, sr='pokemon', sort='hot')
+    #obj.sub_reddit_info(10, 'pokemon', 'hot')
     #pp2(j)
 
 
