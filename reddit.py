@@ -39,7 +39,7 @@ class Redpy:
         # Prepare class variables
         self.data = []
         self.client = requests.session()
-        headers = {'user-agent': '/u/bradygp\'s Crawler', } # What is this?
+        self.headers = {'user-agent': '/u/bradygp\'s Crawler', }
 
         # Read DATA.json file if present or create on if needed
         if os.path.isfile('DATA.json'):
