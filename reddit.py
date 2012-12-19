@@ -22,9 +22,14 @@ except ImportError as err:
 
 #########################################################
 
+<<<<<<< HEAD
 
 def read_tweets():
     for line in fileinput.input():
+=======
+def read_json():
+    for line in open('Data.json','r'):
+>>>>>>> upstream/master
         yield ujson.loads(line)
 
 
@@ -43,7 +48,7 @@ class Redpy:
 
         # Read DATA.json file if present or create on if needed
         if os.path.isfile('DATA.json'):
-            self.data = list(read_tweets())
+            self.data = list(read_json())
         else:
             f = open('DATA.json', 'w')
             f.close()
@@ -81,6 +86,7 @@ class Redpy:
         else:
             for story in j['data']['children']:
                 self.data.append(story)
+                print story
 
 
 #########################################################
@@ -88,11 +94,10 @@ class Redpy:
 
 def main():
     obj = Redpy()
-    obj.login(sys.argv[2], sys.argv[3])
+    obj.login(sys.argv[1], sys.argv[2])
     obj.sub_reddit_info(lim=10, sr='pokemon', sort='hot')
     #obj.sub_reddit_info(10, 'pokemon', 'hot')
     #pp2(j)
-
 
 #########################################################
 
