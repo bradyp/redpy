@@ -22,14 +22,8 @@ except ImportError as err:
 
 #########################################################
 
-<<<<<<< HEAD
-
-def read_tweets():
-    for line in fileinput.input():
-=======
 def read_json():
     for line in open('Data.json','r'):
->>>>>>> upstream/master
         yield ujson.loads(line)
 
 
