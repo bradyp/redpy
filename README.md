@@ -1,6 +1,5 @@
 redpy
 =====
-
 Subreddit analyzer using python!
 
 dependencies
